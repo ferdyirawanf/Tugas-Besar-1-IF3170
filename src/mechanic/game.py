@@ -1,7 +1,8 @@
 import pickle
 from time import time
+import math
 
-from src.ai import Minimax
+from src.ai import Minimax, BotMinimaxAB
 from src.model import Board, Player, State, Config
 from src.constant import ShapeConstant, GameConstant, Path
 from src.utility import is_out, is_win, is_full, place
@@ -56,7 +57,7 @@ class Game:
         elif self.config.game_type == GameConstant.PVB:
             if not self.config.is_dump:
                 # You can change model used here
-                model = Minimax()
+                model = BotMinimaxAB.find(BotMinimaxAB(Board(6,7),1), Board(6,7), self.state, 0, 5, math.inf, -math.inf, True, self.config.thinking_time)
             else:
                 # Don't change this
                 model = pickle.load(open(Path.PVB, "rb"))
