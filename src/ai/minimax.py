@@ -234,7 +234,7 @@ class Minimax2:
                     #Maximazing 4 streak
                     if (board[row, col].color == color and board[row-1, col+1].color == color and board[row-2, col+2].color == color and board[row-3, col+3].color == color and board[row-1,col+1].color != ColorConstant.BLACK and board[row-2, col+2].color != ColorConstant.BLACK and board[row-3,col+3].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
                         value = value + 10**3
-                        shape_value = shape_opp
+                        shape_value = shape
                     if (board[row, col].shape == shape and board[row-1, col+1].shape == shape and board[row-2, col+2].shape == shape and board[row-3, col+3].shape == shape and board[row-1, col+1].shape != ShapeConstant.BLANK and board[row-2, col+2].shape != ShapeConstant.BLANK and board[row-3,col+3].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
                         value = value + 10**3
                         shape_value = shape_opp
