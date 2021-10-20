@@ -62,8 +62,8 @@ class LocalSearchGroup16:
         return bestNeighborValue, bestShape, bestNeighbour
 
     def objectiveFunction(self, neighbour, n_player: int):
-        
-        if n_player == 1:
+        shape = ""
+        if n_player == 0:
             shape = GameConstant.PLAYER1_SHAPE
             color = GameConstant.PLAYER1_COLOR
             shape_opp = GameConstant.PLAYER2_SHAPE
@@ -74,7 +74,7 @@ class LocalSearchGroup16:
 
         board = neighbour[2]
         value = 0
-        shape_value = ""
+        shape_value = shape
         
         for row in range(board.row-1, 0, -1):
             for col in range(0, board.col):
@@ -331,7 +331,7 @@ class LocalSearchGroup16:
         neighbours = self.generateNeighbours(currentState[2], n_player)
         bestNeighborValue, bestShape, bestNeighbour = self.bestNeighbour(neighbours, n_player)
 
-        if bestNeighborValue > currentStateValue:
+        if bestNeighborValue >= currentStateValue:
             currentState = bestNeighbour
             currentStateValue = bestNeighborValue
             currentShape = bestShape
@@ -350,5 +350,6 @@ class LocalSearchGroup16:
         #     neighbours = self.generateNeighbours(currentState, n_player)
         #     bestNeighborValue, bestShape, bestNeighbour = self.bestNeighbour(neighbours, n_player)
 
+        print(currentStateValue, currentState[1], currentShape)
         return currentStateValue, currentState[1], currentShape
         # return bestNeighborValue, bestNeighbour[1], bestShape
