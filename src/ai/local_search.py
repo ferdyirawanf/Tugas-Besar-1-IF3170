@@ -3,9 +3,6 @@ from time import time
 
 from src.constant import *
 from src.model.board import Board
-from src.model.state import State
-from src.model.piece import Piece
-from src.utility import is_win, is_full, place
 import copy
 
 class LocalSearchGroup16:
@@ -18,10 +15,9 @@ class LocalSearchGroup16:
         randomShape = random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE])
         
         copy_board = copy.deepcopy(board)
-        row = board.row - 1
+        row = copy_board.row - 1
         while (copy_board[row, randomCol].shape != ShapeConstant.BLANK and row >= 0):
             row = row - 1
-
         
         copy_board[row,randomCol].color = color
         copy_board[row,randomCol].shape = randomShape
@@ -45,7 +41,6 @@ class LocalSearchGroup16:
                 copy_board[row, i].shape = player_shape
 
                 neighbours.append((row,i,copy_board))
-        # print(neighbours)
         return neighbours   # [(row, col, copy_board), ...]
 
     def bestNeighbour(self, neighbours, n_player):
@@ -62,7 +57,6 @@ class LocalSearchGroup16:
         return bestNeighborValue, bestShape, bestNeighbour
 
     def objectiveFunction(self, neighbour, n_player: int):
-        shape = ""
         if n_player == 0:
             shape = GameConstant.PLAYER1_SHAPE
             color = GameConstant.PLAYER1_COLOR
@@ -88,14 +82,6 @@ class LocalSearchGroup16:
                         value = value + 10**1
                         shape_value = shape
                     
-                    #Minimazing 2 streak
-                    if (board[row, col].color != color and board[row, col+1].color != color and board[row, col+1].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK) :
-                        value = value - 10**1
-                        shape_value = random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE])
-                    if (board[row, col].shape != shape and board[row, col+1].shape != ShapeConstant.BLANK and board[row, col+1].shape != shape and board[row, col].shape != ShapeConstant.BLANK) :
-                        value = value - 10**1
-                        shape_value = shape
-                    
                     #Maximazing 3 streak
                     if (board[row, col].color == color and board[row, col+1].color == color and board[row, col+2].color == color and board[row, col+1].color != ColorConstant.BLACK and board[row, col+2].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
                         value = value + 10**2
@@ -103,14 +89,6 @@ class LocalSearchGroup16:
                     if (board[row, col].shape == shape and board[row, col+1].shape == shape and board[row, col+1].shape != ShapeConstant.BLANK and board[row, col+2].shape != ShapeConstant.BLANK and board[row, col+2].shape == shape and board[row, col].shape != ShapeConstant.BLANK): 
                         value = value + 10**2
                         shape_value = shape_opp
-                        
-                    #Minimazing 3 streak
-                    if (board[row, col].color != color and board[row, col+1].color != color and board[row, col+2].color != color and board[row, col+1].color != ColorConstant.BLACK and board[row, col+2].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
-                        value = value - 10**2
-                        shape_value = shape
-                    if (board[row, col].shape != shape and board[row, col+1].shape != shape and board[row, col+1].shape != ShapeConstant.BLANK and board[row, col+2].shape != ShapeConstant.BLANK and board[row, col+2].shape != shape and board[row, col].shape != ShapeConstant.BLANK): 
-                        value = value - 10**2
-                        shape_value = shape
                     
                     #Maximazing 4 streak
                     if (board[row, col].color == color and board[row, col+1].color == color and board[row, col+2].color == color and board[row, col+3].color == color and board[row, col+1].color != ColorConstant.BLACK and board[row, col+2].color != ColorConstant.BLACK and board[row, col+3].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
@@ -119,14 +97,6 @@ class LocalSearchGroup16:
                     if (board[row, col].shape == shape and board[row, col+1].shape == shape and board[row, col+2].shape == shape and board[row, col+3].shape == shape and board[row, col+1].shape != ShapeConstant.BLANK and board[row, col+2].shape != ShapeConstant.BLANK and board[row, col+3].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
                         value = value + 10**3
                         shape_value = shape_opp
-                        
-                    #Minimazing 4 streak
-                    if (board[row, col].color != color and board[row, col+1].color != color and board[row, col+2].color != color and board[row, col+3].color != color and board[row, col+1].color != ColorConstant.BLACK and board[row, col+2].color != ColorConstant.BLACK and board[row, col+3].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
-                        value = value - 10**3
-                        shape_value = shape
-                    if (board[row, col].shape != shape and board[row, col+1].shape != shape and board[row, col+2].shape != shape and board[row, col+3].shape != shape and board[row, col+1].shape != ShapeConstant.BLANK and board[row, col+2].shape != ShapeConstant.BLANK and board[row, col+3].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
-                        value = value - 10**3
-                        shape_value = shape
                     
                     #Maximazing 4 streak with hole in the middle
                     if (board[row, col].color == color and board[row, col+1].color == color and board[row, col+2].color == color and board[row, col+3].color == color and ((board[row, col+1].color == ColorConstant.BLACK and board[row, col+2].color != ColorConstant.BLACK) or (board[row, col+1].color != ColorConstant.BLACK and board[row, col+2].color == ColorConstant.BLACK)) and board[row, col+3].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
@@ -135,14 +105,6 @@ class LocalSearchGroup16:
                     if (board[row, col].shape == shape and board[row, col+1].shape == shape and board[row, col+2].shape == shape and board[row, col+3].shape == shape and ((board[row, col+1].shape == ShapeConstant.BLANK and board[row, col+2].shape != ShapeConstant.BLANK) or (board[row, col+1].shape != ShapeConstant.BLANK and board[row, col+2].shape == ShapeConstant.BLANK)) and board[row, col+3].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
                         value = value + 10**3
                         shape_value = shape_opp
-                        
-                    #Minimazing 4 streak
-                    if (board[row, col].color != color and board[row, col+1].color != color and board[row, col+2].color != color and board[row, col+3].color != color and ((board[row, col+1].color == ColorConstant.BLACK and board[row, col+2].color != ColorConstant.BLACK) or (board[row, col+1].color != ColorConstant.BLACK and board[row, col+2].color == ColorConstant.BLACK)) and board[row, col+3].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
-                        value = value - 10**3
-                        shape_value = shape
-                    if (board[row, col].shape != shape and board[row, col+1].shape != shape and board[row, col+2].shape != shape and board[row, col+3].shape != shape and ((board[row, col+1].shape == ShapeConstant.BLANK and board[row, col+2].shape != ShapeConstant.BLANK) or (board[row, col+1].shape != ShapeConstant.BLANK and board[row, col+2].shape == ShapeConstant.BLANK)) and board[row, col+3].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
-                        value = value - 10**3
-                        shape_value = shape
                         
                 except IndexError:
                     pass
@@ -156,14 +118,6 @@ class LocalSearchGroup16:
                     if (board[row, col].shape == shape and board[row-1, col].shape == shape and board[row-1, col].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
                         value = value + 10**1
                         shape_value = shape
-                        
-                    #Minimazing 2 streak
-                    if (board[row, col].color != color and board[row-1, col].color != color and board[row-1, col].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
-                        value = value - 10**1
-                        shape_value = random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE])
-                    if (board[row, col].shape != shape and board[row-1, col].shape != shape and board[row-1, col].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
-                        value = value - 10**1
-                        shape_value = shape
                     
                     #Maximazing 3 streak
                     if (board[row, col].color == color and board[row-1, col].color == color and board[row-2, col].color == color and board[row-1, col].color != ColorConstant.BLACK and board[row-2, col].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
@@ -172,14 +126,6 @@ class LocalSearchGroup16:
                     if (board[row, col].shape == shape and board[row-1, col].shape == shape and board[row-2, col].shape == shape and board[row-1, col].shape != ShapeConstant.BLANK and board[row-2, col].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
                         value = value + 10**2
                         shape_value = shape_opp
-                        
-                    #Minimazing 3 streak
-                    if (board[row, col].color != color and board[row-1, col].color != color and board[row-2, col].color != color and board[row-1, col].color != ColorConstant.BLACK and board[row-2, col].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
-                        value = value - 10**2
-                        shape_value = shape
-                    if (board[row, col].shape != shape and board[row-1, col].shape != shape and board[row-2, col].shape != shape and board[row-1, col].shape != ShapeConstant.BLANK and board[row-2, col].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
-                        value = value - 10**2
-                        shape_value = shape
                     
                     #Maximazing 4 streak
                     if (board[row, col].color == color and board[row-1, col].color == color and board[row-2, col].color == color and board[row-3,col].color == color and board[row-1, col].color != ColorConstant.BLACK and board[row-2, col].color != ColorConstant.BLACK and board[row-3, col].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
@@ -188,14 +134,6 @@ class LocalSearchGroup16:
                     if (board[row, col].shape == shape and board[row-1, col].shape == shape and board[row-2, col].shape == shape and board[row-3, col].shape == shape and board[row-1, col].shape != ShapeConstant.BLANK and board[row-2, col].shape != ShapeConstant.BLANK and board[row-3, col].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
                         value = value + 10**3
                         shape_value = shape_opp
-                        
-                    #Minimazing 4 streak
-                    if (board[row, col].color != color and board[row-1, col].color != color and board[row-2, col].color != color and board[row-3,col].color != color and board[row-1, col].color != ColorConstant.BLACK and board[row-2, col].color != ColorConstant.BLACK and board[row-3, col].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
-                        value = value - 10**3
-                        shape_value = shape
-                    if (board[row, col].shape != shape and board[row-1, col].shape != shape and board[row-2, col].shape != shape and board[row-3, col].shape != shape and board[row-1, col].shape != ShapeConstant.BLANK and board[row-2, col].shape != ShapeConstant.BLANK and board[row-3, col].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
-                        value = value - 10**3
-                        shape_value = shape
                         
                 except IndexError :
                     pass
@@ -209,14 +147,6 @@ class LocalSearchGroup16:
                     if (board[row, col].shape == shape and board[row-1, col+1].shape == shape and board[row-1, col+1].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
                         value = value + 10**1
                         shape_value = shape
-                        
-                    #Minimazing 2 streak
-                    if (board[row, col].color != color and board[row-1, col+1].color != color  and board[row-1,col+1].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
-                        value = value - 10**1
-                        shape_value = random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE])
-                    if (board[row, col].shape != shape and board[row-1, col+1].shape != shape and board[row-1, col+1].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
-                        value = value - 10**1
-                        shape_value = shape
                     
                     #Maximazing 3 streak
                     if (board[row, col].color == color and board[row-1, col+1].color == color and board[row-2, col+2].color == color and board[row-1,col+1].color != ColorConstant.BLACK and board[row-2, col+2].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
@@ -225,14 +155,6 @@ class LocalSearchGroup16:
                     if (board[row, col].shape == shape and board[row-1, col+1].shape == shape and board[row-2, col+2].shape == shape and board[row-1, col+1].shape != ShapeConstant.BLANK and board[row-2, col+2].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
                         value = value + 10**2
                         shape_value = shape_opp
-                        
-                    #Minimazing 3 streak
-                    if (board[row, col].color != color and board[row-1, col+1].color != color and board[row-2, col+2].color != color and board[row-1,col+1].color != ColorConstant.BLACK and board[row-2, col+2].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
-                        value = value - 10**2
-                        shape_value = shape
-                    if (board[row, col].shape != shape and board[row-1, col+1].shape != shape and board[row-2, col+2].shape != shape and board[row-1, col+1].shape != ShapeConstant.BLANK and board[row-2, col+2].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
-                        value = value - 10**2
-                        shape_value = shape
 
                     #Maximazing 4 streak
                     if (board[row, col].color == color and board[row-1, col+1].color == color and board[row-2, col+2].color == color and board[row-3, col+3].color == color and board[row-1,col+1].color != ColorConstant.BLACK and board[row-2, col+2].color != ColorConstant.BLACK and board[row-3,col+3].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
@@ -241,14 +163,6 @@ class LocalSearchGroup16:
                     if (board[row, col].shape == shape and board[row-1, col+1].shape == shape and board[row-2, col+2].shape == shape and board[row-3, col+3].shape == shape and board[row-1, col+1].shape != ShapeConstant.BLANK and board[row-2, col+2].shape != ShapeConstant.BLANK and board[row-3,col+3].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
                         value = value + 10**3
                         shape_value = shape_opp
-                        
-                    #Minimazing 4 streak
-                    if (board[row, col].color != color and board[row-1, col+1].color != color and board[row-2, col+2].color != color and board[row-3, col+3].color != color and board[row-1,col+1].color != ColorConstant.BLACK and board[row-2, col+2].color != ColorConstant.BLACK and board[row-3,col+3].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
-                        value = value - 10**3
-                        shape_value = shape
-                    if (board[row, col].shape != shape and board[row-1, col+1].shape != shape and board[row-2, col+2].shape != shape and board[row-3, col+3].shape != shape and board[row-1, col+1].shape != ShapeConstant.BLANK and board[row-2, col+2].shape != ShapeConstant.BLANK and board[row-3,col+3].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
-                        value = value - 10**3
-                        shape_value = shape
                 
                 except IndexError :
                     pass
@@ -262,14 +176,6 @@ class LocalSearchGroup16:
                     if (board[row, col].shape == shape and board[row+1, col+1].shape == shape and board[row+1, col+1].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
                         value = value + 10**1
                         shape_value = shape
-                        
-                    #Minimazing 2 streak
-                    if (board[row, col].color != color and board[row+1, col+1].color != color  and board[row+1,col+1].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
-                        value = value - 10**1
-                        shape_value = random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE])
-                    if (board[row, col].shape != shape and board[row+1, col+1].shape != shape and board[row+1, col+1].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
-                        value = value - 10**1
-                        shape_value = shape
 
                     #Maximazing 3 streak
                     if (board[row, col].color == color and board[row+1, col+1].color == color and board[row+2, col+2].color == color and board[row+1,col+1].color != ColorConstant.BLACK and board[row+2, col+2].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
@@ -278,14 +184,6 @@ class LocalSearchGroup16:
                     if (board[row, col].shape == shape and board[row+1, col+1].shape == shape and board[row+2, col+2].shape == shape and board[row+1, col+1].shape != ShapeConstant.BLANK and board[row+2, col+2].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
                         value = value + 10**2
                         shape_value = shape_opp
-                        
-                    #Minimazing 3 streak
-                    if (board[row, col].color != color and board[row+1, col+1].color != color and board[row+2, col+2].color != color and board[row+1,col+1].color != ColorConstant.BLACK and board[row+2, col+2].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
-                        value = value - 10**2
-                        shape_value = shape
-                    if (board[row, col].shape != shape and board[row+1, col+1].shape != shape and board[row+2, col+2].shape != shape and board[row+1, col+1].shape != ShapeConstant.BLANK and board[row+2, col+2].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
-                        value = value - 10**2
-                        shape_value = shape
                     
                     #Maximazing 4 streak
                     if (board[row, col].color == color and board[row+1, col+1].color == color and board[row+2, col+2].color == color and board[row+3, col+3].color == color and board[row+1,col+1].color != ColorConstant.BLACK and board[row+2, col+2].color != ColorConstant.BLACK and board[row+3,col+3].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
@@ -294,14 +192,6 @@ class LocalSearchGroup16:
                     if (board[row, col].shape == shape and board[row+1, col+1].shape == shape and board[row+2, col+2].shape == shape and board[row+3, col+3].shape == shape and board[row+1, col+1].shape != ShapeConstant.BLANK and board[row+2, col+2].shape != ShapeConstant.BLANK and board[row+3,col+3].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
                         value = value + 10**3
                         shape_value = shape_opp
-                        
-                    #Minimazing 4 streak
-                    if (board[row, col].color != color and board[row+1, col+1].color != color and board[row+2, col+2].color != color and board[row+3, col+3].color != color and board[row+1,col+1].color != ColorConstant.BLACK and board[row+2, col+2].color != ColorConstant.BLACK and board[row+3,col+3].color != ColorConstant.BLACK and board[row, col].color != ColorConstant.BLACK):
-                        value = value - 10**3
-                        shape_value = shape
-                    if (board[row, col].shape != shape and board[row+1, col+1].shape != shape and board[row+2, col+2].shape != shape and board[row+3, col+3].shape != shape and board[row+1, col+1].shape != ShapeConstant.BLANK and board[row+2, col+2].shape != ShapeConstant.BLANK and board[row+3,col+3].shape != ShapeConstant.BLANK and board[row, col].shape != ShapeConstant.BLANK): 
-                        value = value - 10**3
-                        shape_value = shape
                         
                 except IndexError :
                     pass
@@ -336,20 +226,4 @@ class LocalSearchGroup16:
             currentStateValue = bestNeighborValue
             currentShape = bestShape
 
-        # while bestNeighborValue > currentStateValue:
-        #     currentState = bestNeighbour
-        #     currentStateValue = bestNeighborValue
-        #     currentShape = bestShape
-
-        #     now = time()
-        #     thinking_time -= (now - start_time)
-        #     if thinking_time <= 0 :
-        #         break
-        #     start_time = time()
-
-        #     neighbours = self.generateNeighbours(currentState, n_player)
-        #     bestNeighborValue, bestShape, bestNeighbour = self.bestNeighbour(neighbours, n_player)
-
-        print(currentStateValue, currentState[1], currentShape)
         return currentStateValue, currentState[1], currentShape
-        # return bestNeighborValue, bestNeighbour[1], bestShape
