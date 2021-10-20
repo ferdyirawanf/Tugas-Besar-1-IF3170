@@ -14,17 +14,19 @@ class LocalSearchGroup16:
         pass
 
     def randomSuccessor(self, board: Board, color):
-        randomCol = random.randint(0, board.col)
+        randomCol = random.randint(0, board.col-1)
         randomShape = random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE])
         
+        copy_board = copy.deepcopy(board)
         row = board.row - 1
-        while (board[row, randomCol].shape != ShapeConstant.BLANK and row >= 0):
+        while (copy_board[row, randomCol].shape != ShapeConstant.BLANK and row >= 0):
             row = row - 1
 
-        board[row,randomCol].color = color
-        board[row,randomCol].shape = randomShape
+        
+        copy_board[row,randomCol].color = color
+        copy_board[row,randomCol].shape = randomShape
 
-        return (row, randomCol, board)
+        return (row, randomCol, copy_board)
 
     def generateNeighbours(self, board: Board, n_player: int):
         (player_color, player_shape) = \
