@@ -31,7 +31,7 @@ from src.constant import ColorConstant, GameConstant, ShapeConstant
 from typing import Tuple, List
 
 
-class Minimax2:
+class MinimaxGroup16:
     def __init__(self):
         pass
     
