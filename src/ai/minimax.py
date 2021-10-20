@@ -297,7 +297,6 @@ class MinimaxGroup16:
                 shape = GameConstant.PLAYER2_SHAPE
             elif listShape[i][0] == GameConstant.PLAYER2_SHAPE and listShape[i][1] == 0:
                 shape = GameConstant.PLAYER1_SHAPE
-        print(value, col, shape)
         return col, shape 
         
     def MinimaxAB(self, state, board: Board, n_player: int, depth: int, alpha: int, beta: int, thinking_time, start) :
