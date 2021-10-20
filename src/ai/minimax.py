@@ -7,7 +7,7 @@ from src.model import State
 from typing import Tuple, List
 
 
-class Minimax:
+class MinimaxGroup16:
     def __init__(self):
         pass
 
